@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 
 #include "cache/lrucache.hpp"
 
@@ -37,9 +38,35 @@ void testLruCache_EmptyCache_Insert(){
     assert(val.value() == 16 && "get() should return 16 as key '3' was updated with value 16");
 }
 
+void testLruCache_EmptyCache_AlternatePuts(){
+    cache::LRUCache<int,int> cache(2);
+
+    for (int i=0; i<1000; i++){
+        cache.put(1,1);
+        cache.put(2,2);
+    }
+
+    std::cout << "Hash map size: " << cache.getCacheSize() << "\n";
+    std::cout << "List size: " << cache.getListSize() << "\n";
+}
+
+void testLruCache_EmptyCache_CapacityOne_Insert(){
+    cache::LRUCache<int,int> cache(1);
+
+    cache.put(1,1);
+    cache.put(2,2);
+    cache.put(3,3);
+
+    auto val = cache.get(3);
+    assert(val == 3 && "Only entry should be 3");
+}
+
+
 int main()
 {
     testLruCache_GetCapacity();
     testLruCache_EmptyCache_Insert();
+    testLruCache_EmptyCache_CapacityOne_Insert();
+    testLruCache_EmptyCache_AlternatePuts();
     return 0;
 }

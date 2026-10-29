@@ -14,10 +14,12 @@ public:
     }
 
     size_t getCapacity() const { return capacity_; }
+    size_t getCacheSize() const { return hashMap_.size(); }
+    size_t getListSize() const { return lruList_.size(); }
 
-    // todo: should be const imo
     std::optional<ValueType> get(KeyValue key){
         if (auto search = hashMap_.find(key); search != hashMap_.end()){
+            updateLruList(key);
             return search->second;
         }
         return std::nullopt;
@@ -34,6 +36,7 @@ public:
         }
         else {
             evictLeastRecentlyUsed();
+            updateLruList(key);
             hashMap_[key] = value;
         }
     }
@@ -52,7 +55,7 @@ private:
         }
     }
 
-    size_t capacity_ = 1; // Since capacity is a fixed size not expected to change, using unfixed size int.
+    size_t capacity_ = 1;
     std::unordered_map<KeyValue,ValueType> hashMap_;
     std::list<KeyValue> lruList_;
 };
